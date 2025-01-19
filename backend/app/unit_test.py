@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from main import app
+from app.main import app
 
 client = TestClient(app)
 
@@ -9,7 +9,7 @@ def test_read_root():
     assert response.json() == {"message": "Welcome to BiteMe!"}
 
 def test_add_menu_item():
-    item = {"name": "Burger", "description": "Delicious beef burger", "price": 10.99, "available": True}
+    item = {"name": "Pizza", "description": "Cheese Pizza", "price": 12.99, "available": True}
     response = client.post("/menu", json=item)
     assert response.status_code == 200
     assert response.json() == {"message": "Item added successfully"}
