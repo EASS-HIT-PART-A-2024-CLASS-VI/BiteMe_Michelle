@@ -8,10 +8,14 @@ This repository contains the code for a Food Ordering System that allows users t
 
 ### Currently Available:
 #### Backend:
-- 🛒 Order Management: Create, view, and manage food orders.
-- 📋 Menu Management: Add, update, and delete menu items.
-- 🧬 Testing: Unit and integration tests to ensure the backend works as expected.
-- 🐋 Docker Support: Ready for containerization with Docker for easy deployment.
+-🌐User Authentication: Secure login and user management with token-based authentication.
+- 🛒 Order Management: Place and view food orders.
+- 📋 Menu Management:Add, view, update, and delete menu items.
+-🍽️Restaurant Management: Add and view restaurant details.
+- 🧬 Testing: Comprehensive unit and integration tests to ensure reliability.
+- 🐋 Docker Support: Pre-configured for containerization with Docker for easy deployment.
+
+---
 
 ### To Be Continued (Frontend & More):
 #### Frontend:
@@ -42,21 +46,26 @@ This repository contains the code for a Food Ordering System that allows users t
 ## 📂 Project Structure
 
 ```plaintext
-.
+..
 ├── backend
 │   ├── app
 │   │   ├── __init__.py         # Package initializer
-│   │   ├── crud.py             # Database operations
-│   │   ├── database.py         # Database connection setup
+│   │   ├── dbConnection
+│   │   │   ├── __init__.py     # DB package initializer
+│   │   │   └── mongoRepository.py # MongoDB repository functions
+│   │   ├── mock.py             # Mock data for testing
+│   │   ├── models
+│   │   │   ├── __init__.py     # Models package initializer
+│   │   │   ├── models.py       # Data models
+│   │   │   ├── schemas.py      # Pydantic schemas for validation
+│   │   │   └── types.py        # Enums and constants
 │   │   ├── main.py             # FastAPI application entry point
-│   │   ├── models.py           # Database models
-│   │   ├── schemas.py          # Pydantic schemas for validation
-│   │   ├── unit_tests.py       # Unit tests for API endpoints
+│   │   ├── unit_test.py        # Unit tests for API endpoints
 │   │   └── requirements.txt    # Python dependencies
-│   ├── Dockerfile              # Docker configuration
-│   ├── integration_test.py     # Integration tests for the app
-│   └── requirements.txt        # Project-wide dependencies
+│   ├── Dockerfile              # Backend Docker configuration
+│   └── integration_test.py     # Integration tests for the app
 ├── README.md                   # Project documentation
+
 ```
 
 ---
