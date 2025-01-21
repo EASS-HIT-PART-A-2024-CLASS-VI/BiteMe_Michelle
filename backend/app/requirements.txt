@@ -1,11 +1,7 @@
 fastapi
 uvicorn
-<<<<<<< HEAD
-pydantic
-pytest
-httpx
-=======
 httpx
 pydantic
 awkward
->>>>>>> e37a76d (Updated backend with new features and fixed file tracking)
+pymongo[srv]
+python-dotenv

@@ -1,6 +1,5 @@
 import httpx
 
-<<<<<<< HEAD
 def test_integration():
     base_url = "http://127.0.0.1:8000"
 
@@ -17,7 +16,7 @@ def test_integration():
     response = httpx.get(f"{base_url}/menu")
     assert response.status_code == 200
     assert len(response.json()) > 0
-=======
+
 def test_get_restaurants_by_city():
     base_url = "http://127.0.0.1:8000"
     response = httpx.get(f"{base_url}/restaurants/get-by-city?city=Tel%20Aviv")
@@ -30,4 +29,3 @@ def test_place_order():
     response = httpx.post(f"{base_url}/submit/place-order", json=order_payload)
     assert response.status_code == 200
     assert "message" in response.json()
->>>>>>> e37a76d (Updated backend with new features and fixed file tracking)
