@@ -8,10 +8,10 @@ This repository contains the code for a Food Ordering System that allows users t
 
 ### Currently Available:
 #### Backend:
--🌐User Authentication: Secure login and user management with token-based authentication.
+- 🌐User Authentication: Secure login and user management with token-based authentication.
 - 🛒 Order Management: Place and view food orders.
 - 📋 Menu Management:Add, view, update, and delete menu items.
--🍽️Restaurant Management: Add and view restaurant details.
+- 🍽️Restaurant Management: Add and view restaurant details.
 - 🧬 Testing: Comprehensive unit and integration tests to ensure reliability.
 - 🐋 Docker Support: Pre-configured for containerization with Docker for easy deployment.
 
