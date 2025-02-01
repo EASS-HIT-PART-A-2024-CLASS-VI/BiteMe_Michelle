@@ -1,77 +1,91 @@
 import streamlit as st
 import requests
 
-# Mock API base URL
-API_BASE_URL = "http://localhost:8000"  # Update to match your backend
+# --- Page Config ---
+st.set_page_config(page_title="🍔 BiteMe - Food Ordering", page_icon="🍕", layout="wide")
 
-# Fetch data functions
-def fetch_all_dishes():
-    """Fetch all dishes from the backend."""
-    response = requests.get(f"{API_BASE_URL}/dishes")
-    if response.status_code == 200:
-        return response.json()
-    return []
+# --- Custom Styling ---
+st.markdown("""
+    <style>
+    .main {
+        background-color: #f8f9fa;
+    }
+    .stTextInput {
+        border-radius: 10px;
+        padding: 10px;
+    }
+    .stButton>button {
+        background-color: #ff5733;
+        color: white;
+        font-size: 18px;
+        border-radius: 10px;
+        padding: 10px;
+    }
+    .stButton>button:hover {
+        background-color: #c70039;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-def fetch_cities():
-    """Fetch all available cities from the backend."""
-    response = requests.get(f"{API_BASE_URL}/cities")
-    if response.status_code == 200:
-        return response.json()
-    return []
+# --- Title & Header ---
+st.title("🍔 Welcome to BiteMe - Your Favorite Food Ordering App!")
 
-def fetch_restaurants_by_city(city):
-    """Fetch restaurants in a specific city from the backend."""
-    response = requests.get(f"{API_BASE_URL}/restaurants/city/{city}")
-    if response.status_code == 200:
-        return response.json()
-    return []
+# --- Fetch Data for Dropdowns ---
+try:
+    cities_response = requests.get("http://localhost:8000/restaurant/get-cities")
+    dishes_response = requests.get("http://localhost:8000/restaurant/get-dishes")
+    restaurants_response = requests.get("http://localhost:8000/restaurant/get-restaurants")
 
-def main():
-    st.set_page_config(page_title="BiteMe", page_icon="🍔", layout="wide")
+    cities = cities_response.json().get("cities", []) if cities_response.status_code == 200 else []
+    dishes = dishes_response.json().get("dishes", []) if dishes_response.status_code == 200 else []
+    restaurants = restaurants_response.json().get("restaurants", []) if restaurants_response.status_code == 200 else []
+except Exception as e:
+    cities, dishes, restaurants = [], [], []
+    st.error(f"⚠️ Failed to fetch data for dropdowns: {e}")
 
-    # Display logo (ensure the file exists in the working directory)
-    st.image("biteme_logo.gif", use_container_width=True)
+# --- Search Section ---
+st.subheader("🔍 Search for Food")
 
-    st.title("Welcome to BiteMe!")
-    st.subheader("Where cravings meet convenience 🍔🍕")
+# --- Dropdown Fields ---
+search_type = st.selectbox("Search by", ["City", "Dish", "Restaurant"])
 
-    # Navigation options
-    st.header("Navigation Options:")
-    option = st.selectbox("Choose an option", ["Browse Restaurants"])
+if search_type == "City":
+    search_query = st.selectbox("Select a city", cities)
+elif search_type == "Dish":
+    search_query = st.selectbox("Select a dish", dishes)
+elif search_type == "Restaurant":
+    search_query = st.selectbox("Select a restaurant", restaurants)
+else:
+    search_query = None
 
-    if option == "Browse Restaurants":
-        st.subheader("Find Restaurants by:")
+if st.button("Search 🔍"):
+    if not search_query:
+        st.error("Please select a value from the dropdown.")
+    else:
+        try:
+            # Map search types to API endpoints
+            endpoint_map = {
+                "City": "get-by-city",
+                "Dish": "get-by-dish",
+                "Restaurant": "get-by-name"
+            }
+            endpoint = endpoint_map[search_type]
+            response = requests.get(f"http://localhost:8000/restaurant/{endpoint}?query={search_query}")
 
-        search_by = st.radio("Search by:", ["City", "Cuisine", "Dish"])
+            # Process the response
+            if response.status_code == 200:
+                data = response.json()
+                results = data.get("restaurants", []) if search_type != "Restaurant" else [data.get("restaurant", {})]
+                if results:
+                    st.success(f"Found {len(results)} result(s) for {search_type.lower()} '{search_query}':")
+                    for r in results:
+                        st.write(f"✅ **{r.get('name', 'N/A')}** - 📍 {r.get('city', 'N/A')}")
+                else:
+                    st.warning(f"No results found for {search_type.lower()} '{search_query}'.")
+            else:
+                st.error("Failed to fetch results from the server.")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
 
-        if search_by == "City":
-            cities = fetch_cities()
-            if cities:
-                city = st.selectbox("Select a city:", cities)
-                if st.button("Search"):
-                    results = fetch_restaurants_by_city(city)
-                    if results:
-                        st.write("### Restaurants in", city)
-                        for restaurant in results:
-                            st.write(f"- **{restaurant['name']}**: {restaurant['type']} (City: {restaurant['city']})")
-                    else:
-                        st.write("No restaurants found in this city.")
-
-        elif search_by == "Cuisine":
-            st.write("Cuisine search not yet implemented.")
-
-        elif search_by == "Dish":
-            dishes = fetch_all_dishes()
-            if dishes:
-                dish = st.selectbox("Select a dish:", dishes)
-                if st.button("Search"):
-                    results = fetch_restaurants_by_dish(dish)
-                    if results:
-                        st.write("### Restaurants offering", dish)
-                        for restaurant in results:
-                            st.write(f"- **{restaurant['name']}** (City: {restaurant['city']})")
-                    else:
-                        st.write("No restaurants found offering this dish.")
-
-if __name__ == "__main__":
-    main()
+# --- Footer ---
+st.markdown("### ❤️ Built with Streamlit for a delightful ordering experience!")
