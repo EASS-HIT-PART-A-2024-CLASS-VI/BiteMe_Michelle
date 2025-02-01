@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, Query
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from app.dbConnection.mongoRepository import get_database
-from app.models.models import MenuItem, Order
+from app.models.models import Restaurant
 
 # FastAPI instance
 app = FastAPI()
@@ -130,24 +130,56 @@ def read_users_me(token: str = Depends(oauth2_scheme)):
 def read_root():
     return {"message": "Welcome to BiteMe!"}
 
-@app.get("/menu")
-def get_menu_from_db():
-    menu_collection = db["menu"]
-    menu_items = list(menu_collection.find({}, {"_id": 0}))  # Exclude MongoDB's default _id field
-    return menu_items
-
-@app.post("/menu")
-def add_menu_to_db(item: MenuItem):
-    menu_collection = db["menu"]
-    menu_collection.insert_one(item.model_dump())  # Use model_dump for Pydantic V2+
-    return {"message": "Item added successfully"}
+@app.get("/restaurants")
+def get_all_restaurants():
+    """
+    Fetch all restaurants from the database.
+    """
+    try:
+        restaurants = db["restaurants"].find({}, {"_id": 0})  # Exclude MongoDB's _id field
+        return {"success": True, "restaurants": list(restaurants)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/restaurants/get-by-city")
 def get_restaurants_by_city(city: str):
-    if city.lower() == "tel aviv":
-        return [{"name": "Best Pizza", "city": "Tel Aviv"}]
-    return []
+    """
+    Fetch restaurants in a specific city.
+    """
+    try:
+        restaurants = db["restaurants"].find({"city": city}, {"_id": 0})  # Match by city
+        restaurant_list = list(restaurants)
+        if not restaurant_list:
+            raise HTTPException(status_code=404, detail="No restaurants found in this city.")
+        return {"success": True, "restaurants": restaurant_list}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/submit/place-order")
-def place_order(order: Order):
-    return {"message": "Order placed successfully"}
+@app.get("/restaurants/get-by-dish")
+def get_restaurants_by_dish(dish_name: str):
+    """
+    Fetch restaurants that serve a specific dish.
+    """
+    try:
+        restaurants = db["restaurants"].find(
+            {"menu.name": dish_name}, {"_id": 0}
+        )  # Query menu items inside restaurants
+        restaurant_list = list(restaurants)
+        if not restaurant_list:
+            raise HTTPException(status_code=404, detail="No restaurants serve this dish.")
+        return {"success": True, "restaurants": restaurant_list}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/restaurants/get-by-name")
+def get_restaurants_by_name(name: str):
+    """
+    Fetch a restaurant by its name.
+    """
+    try:
+        restaurant = db["restaurants"].find_one({"name": name}, {"_id": 0})
+        if not restaurant:
+            raise HTTPException(status_code=404, detail="Restaurant not found")
+        return {"success": True, "restaurant": restaurant}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

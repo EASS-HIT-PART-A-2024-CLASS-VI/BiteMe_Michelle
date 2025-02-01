@@ -1,31 +1,50 @@
-import httpx
+import pytest
+from fastapi.testclient import TestClient
+from app.main import app
 
-def test_integration():
-    base_url = "http://127.0.0.1:8000"
+# Initialize the TestClient
+client = TestClient(app)
 
-    # Test root endpoint
-    response = httpx.get(base_url)
+def test_root_endpoint():
+    """
+    Test the root endpoint of the API.
+    """
+    response = client.get("/")
     assert response.status_code == 200
+    assert response.json() == {"message": "Welcome to BiteMe!"}
 
-    # Test adding a menu item
-    item = {"name": "Pizza", "description": "Cheese pizza", "price": 12.99, "available": True}
-    response = httpx.post(f"{base_url}/menu", json=item)
+def test_fetch_all_restaurants():
+    """
+    Test fetching all restaurants from the database.
+    """
+    response = client.get("/restaurants")
     assert response.status_code == 200
+    assert "restaurants" in response.json()
+    assert len(response.json()["restaurants"]) > 0  # Ensure restaurants are returned
 
-    # Test retrieving the menu
-    response = httpx.get(f"{base_url}/menu")
+def test_fetch_restaurants_by_city():
+    """
+    Test fetching restaurants filtered by city.
+    """
+    response = client.get("/restaurants/get-by-city?city=Tel%20Aviv")
     assert response.status_code == 200
-    assert len(response.json()) > 0
+    assert "restaurants" in response.json()
+    assert len(response.json()["restaurants"]) > 0  # Ensure results exist
 
-def test_get_restaurants_by_city():
-    base_url = "http://127.0.0.1:8000"
-    response = httpx.get(f"{base_url}/restaurants/get-by-city?city=Tel%20Aviv")
+def test_fetch_restaurants_by_dish():
+    """
+    Test fetching restaurants that serve a specific dish.
+    """
+    response = client.get("/restaurants/get-by-dish?dish_name=Margherita")
     assert response.status_code == 200
-    assert len(response.json()) > 0
+    assert "restaurants" in response.json()
+    assert len(response.json()["restaurants"]) > 0  # Ensure results exist
 
-def test_place_order():
-    base_url = "http://127.0.0.1:8000"
-    order_payload = {"restaurant_id": 1, "dish_name": "Margherita", "quantity": 2, "customer_name": "John Doe"}
-    response = httpx.post(f"{base_url}/submit/place-order", json=order_payload)
+def test_fetch_restaurant_by_name():
+    """
+    Test fetching a restaurant by its name.
+    """
+    response = client.get("/restaurants/get-by-name?name=Pizza%20Paradise")
     assert response.status_code == 200
-    assert "message" in response.json()
+    assert "restaurant" in response.json()
+    assert response.json()["restaurant"]["name"] == "Pizza Paradise"
