@@ -85,24 +85,26 @@ backend/
 ## 🔧 Installation
 
 ### 1. Clone the Repository
-```bash
+```
 git clone https://github.com/EASS-HIT-PART-A-2024-CLASS-VI/BiteMe.git
-cd BiteMe/backend   ```
+cd BiteMe/backend
+```
 
  **2. Create Virtual Environment:**
 ```
 python3 -m venv venv
-source venv/bin/activate  # On Windows, use `venv\Scripts\activate` ```
+source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+ ```
 
 
  **3. Install Dependencies:**
    ```
-pip install -r requirements.txt   ```
+pip install -r requirements.txt
+ ```
 
 
 **4. Configure Environment Variables**
 Create a .env file in the project root with:
- 
 ```
 MONGO_URI=your_mongodb_connection_string
 SECRET_KEY=your_secret_key
@@ -121,8 +123,6 @@ Production Deployment
 ```
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
-
-
 
 ---
 
