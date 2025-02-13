@@ -1,9 +1,25 @@
-fastapi
-uvicorn
-httpx
-pydantic
-awkward
-pymongo[srv]
-python-dotenv
-python-jose[cryptography]
-passlib[bcrypt]
+# FastAPI and server
+fastapi>=0.68.0
+uvicorn>=0.15.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+email-validator>=2.0.0  # for email validation
+
+# Database
+pymongo>=4.0.0
+motor>=3.0.0  # async MongoDB driver
+
+# Authentication and Security
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.5  # for form data
+python-dotenv>=0.19.0
+
+# Testing
+pytest>=6.2.5
+httpx>=0.23.0  # for async tests
+pytest-asyncio>=0.16.0
+
+# Utilities
+python-dateutil>=2.8.2
+pytz>=2021.3

@@ -4,42 +4,39 @@ This repository contains the code for a Food Ordering System that allows users t
 
 ---
 
-## 🚀 Features
+## 🌟 Key Features
 
-### Currently Available:
-#### Backend:
-- 🌐User Authentication: Secure login and user management with token-based authentication.
-- 🛒 Order Management: Place and view food orders.
-- 📋 Menu Management:Add, view, update, and delete menu items.
-- 🍽️Restaurant Management: Add and view restaurant details.
-- 🧬 Testing: Comprehensive unit and integration tests to ensure reliability.
-- 🐋 Docker Support: Pre-configured for containerization with Docker for easy deployment.
+### Backend Capabilities:
+- 🔐 User Authentication
+  - Secure user registration
+  - JWT-based login system
+  - User profile management
 
----
+- 🍽️ Restaurant Management
+  - Create and manage restaurant profiles
+  - Add, update, and delete menu items
+  - Filter restaurants by cuisine and rating
 
-### To Be Continued (Frontend & More):
-#### Frontend:
-- 🌐 User Interface: A clean and responsive web interface for placing orders and managing the menu.
-- 🕱️ User Authentication: Secure login and registration features.
-- 🍽️ Order Placement: Users can browse the menu, select items, and place orders.
-- 📦 Order Tracking: A system to track the status of placed orders in real-time.
-- 💬 User Feedback: Allow users to leave reviews and ratings for the menu items.
+- 🛒 Order Processing
+  - Create and track food orders
+  - Retrieve user-specific order history
+  - Update order status
 
+- 🔒 Security Features
+  - Password hashing
+  - Token-based authentication
+  - Role-based access control
 ---
 
 ## 🛠️ Technologies Used
 
-### Backend:
-- 🌐 FastAPI: Modern, high-performance web framework for APIs.
-- ⚡ Uvicorn: Blazing-fast ASGI server for serving the app.
-- ✅ Pydantic: Simplifies data validation and settings management.
-- 🐋 Docker: Containerization for portability and scalability.
-- 🧬 pytest: Unit and integration testing framework.
-
-### Frontend (To Be Continued):
-- React: JavaScript library for building user interfaces.
-- Redux: State management for frontend applications.
-- Axios: Promise-based HTTP client for making API requests.
+### Backend Stack:
+- **Web Framework**: FastAPI
+- **Database**: MongoDB
+- **ORM/Validation**: Pydantic
+- **Authentication**: JWT (JSON Web Tokens)
+- **Database Driver**: PyMongo
+- **Testing**: pytest
 
 ---
 
@@ -47,97 +44,122 @@ This repository contains the code for a Food Ordering System that allows users t
 
 ```plaintext
 ..
-├── backend
-│   ├── app
-│   │   ├── __init__.py         # Package initializer
-│   │   ├── dbConnection
-│   │   │   ├── __init__.py     # DB package initializer
-│   │   │   └── mongoRepository.py # MongoDB repository functions
-│   │   ├── mock.py             # Mock data for testing
-│   │   ├── models
-│   │   │   ├── __init__.py     # Models package initializer
-│   │   │   ├── models.py       # Data models
-│   │   │   ├── schemas.py      # Pydantic schemas for validation
-│   │   │   └── types.py        # Enums and constants
-│   │   ├── main.py             # FastAPI application entry point
-│   │   ├── unit_test.py        # Unit tests for API endpoints
-│   │   └── requirements.txt    # Python dependencies
-│   ├── Dockerfile              # Backend Docker configuration
-│   └── integration_test.py     # Integration tests for the app
-├── README.md                   # Project documentation
+backend/
+├── app/
+│   ├── api/                 # API routes
+│   │   ├── __init__.py
+│   │   ├── orders.py
+│   │   ├── restaurants.py
+│   │   └── users.py
+│   ├── core/               # Core configurations
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   └── security.py
+│   ├── dbConnection/       # Database connectivity
+│   │   └── mongoRepository.py
+│   ├── models/            # Data models
+│   │   ├── __init__.py
+│   │   └── models.py
+│   └── main.py
+├── tests/                 # Test files
+│   ├── __init__.py
+│   ├── conftest.py
+│   ├── integration_test.py
+│   └── unit_test.py
+├── Dockerfile            # Docker configuration
+├── README.md
+└── requirements.txt      # Project dependencies
 
 ```
 
+---
+## 📋 System Requirements
+
+### Prerequisites:
+- Python 3.9+
+- MongoDB
+- pip package manager
 ---
 
 ## **👄 Installation**
+## 🔧 Installation
 
-### Prerequisites
-Ensure Python 3.9+ is installed. Download it [here](https://www.python.org/downloads/).
-
-### Steps
-
-1. **Clone the Repository:**
-```
+### 1. Clone the Repository
+```bash
 git clone https://github.com/EASS-HIT-PART-A-2024-CLASS-VI/BiteMe.git
-cd BiteMe
-   ```
+cd BiteMe/backend   ```
 
-3. **Create a Virtual Environment:**
+ **2. Create Virtual Environment:**
 ```
 python3 -m venv venv
- ```
+source venv/bin/activate  # On Windows, use `venv\Scripts\activate` ```
 
-3. **Activate the Virtual Environment:**
-   - **Windows:**
-    ```
-     .\venv\Scripts\activate
-     ```
-   - **macOS/Linux:**
-     ```
-     source venv/bin/activate
-     ```
 
-4. **Install Dependencies:**
+ **3. Install Dependencies:**
    ```
-   pip install -r backend/app/requirements.txt
-   ```
+pip install -r requirements.txt   ```
+
+
+**4. Configure Environment Variables**
+Create a .env file in the project root with:
+ 
+```
+MONGO_URI=your_mongodb_connection_string
+SECRET_KEY=your_secret_key
+```
 
 ---
 
-## ▶️ **Running the Application**
+## ▶️ **🚀 Running the Application**
 
-Start the FastAPI application:
+Development Mode
 
 ```
-uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+Production Deployment
+```
+uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-Visit the app at [http://localhost:8000](http://localhost:8000).
+
 
 ---
 
-## **🧬 Running Tests**
+## **🧬 🧪 Testing**
 
-Run unit and integration tests:
 ```
 pytest
 ```
+Test Coverage
 
+Unit Tests: Model validations, security functions
+Integration Tests: User registration, restaurant management, order processing
 ---
 
 ## **🐋 Docker Support**
 
 1. **Build the Docker Image:**
  ```
-docker build -t food-ordering-backend .
+docker build -t biteme-backend .
    ```
 2. **Run the Docker Container:**
 ```
-docker run -d -p 8000:8000 food-ordering-backend
+docker run -d -p 8000:8000 biteme-backend
    ```
+---
+📚 API Documentation
+Access Swagger UI for interactive API documentation:
 
-Access the app at [http://localhost:8000](http://localhost:8000).
+URL: http://localhost:8000/docs
+Explore and test all endpoints directly in your browser
+
+🔍 Key Endpoints
+
+/users/register: User registration
+/users/token: User authentication
+/restaurants/: Restaurant management
+/orders/: Order processing
 
 ---
 
