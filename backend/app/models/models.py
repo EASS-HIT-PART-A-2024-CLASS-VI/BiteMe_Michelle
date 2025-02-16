@@ -1,8 +1,8 @@
-# app/models/models.py
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, validator
 from typing import List, Optional
 from datetime import datetime
 from enum import Enum
+import re
 
 class FoodCategory(str, Enum):
     ITALIAN = "Italian"
@@ -29,7 +29,7 @@ class MenuItem(BaseModel):
     spiciness_level: Optional[int] = Field(None, ge=1, le=5)
     is_vegetarian: bool = False
     available: bool = True
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 class Restaurant(BaseModel):
@@ -41,7 +41,7 @@ class Restaurant(BaseModel):
     menu: List[MenuItem]
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 class OrderItem(BaseModel):
@@ -50,27 +50,40 @@ class OrderItem(BaseModel):
     name: str
     quantity: int = Field(gt=0, le=20)
     price: float = Field(gt=0)
-    
+
     model_config = ConfigDict(from_attributes=True)
+
+    @validator('quantity')
+    def validate_quantity(cls, v):
+        if v <= 0:
+            raise ValueError('Quantity must be positive')
+        return v
 
 class Order(BaseModel):
     id: Optional[str] = None
     user_id: Optional[str] = None
-    restaurant_id: str
+    restaurant_id: Optional[str] = None
     items: List[OrderItem]
     total_price: float = Field(gt=0)
     status: OrderStatus = OrderStatus.PENDING
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     special_instructions: Optional[str] = None
-    
+    payment_method: Optional[str] = None
+
     model_config = ConfigDict(from_attributes=True)
+
+    @validator('total_price')
+    def validate_total_price(cls, v):
+        if v <= 0:
+            raise ValueError('Total price must be positive')
+        return v
 
 class UserBase(BaseModel):
     email: EmailStr
     full_name: str
     phone_number: Optional[str] = None
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 class UserCreate(UserBase):
@@ -81,7 +94,7 @@ class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     phone_number: Optional[str] = None
     password: Optional[str] = None
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 class User(UserBase):
@@ -96,26 +109,26 @@ class UserInDB(User):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 class TokenData(BaseModel):
     email: Optional[str] = None
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 class RestaurantFilter(BaseModel):
     cuisine_type: Optional[FoodCategory] = None
     min_rating: Optional[float] = Field(None, ge=0, le=5)
     is_vegetarian_friendly: Optional[bool] = None
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 class ReviewCreate(BaseModel):
     restaurant_id: str
     rating: float = Field(ge=1, le=5)
     comment: Optional[str] = None
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 class Review(ReviewCreate):
