@@ -1,11 +1,12 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import { useAuth } from './AuthContext';
 
 const CartContext = createContext(null);
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   // Load cart from localStorage when authenticated
   useEffect(() => {
@@ -29,6 +30,17 @@ export const CartProvider = ({ children }) => {
   }, [cartItems, isAuthenticated]);
 
   const addToCart = (item) => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      toast.error('Please login to add items to cart', {
+        onClick: () => {
+          // You might want to create a global method to open login modal
+          window.dispatchEvent(new Event('open-login-modal'));
+        }
+      });
+      return false;
+    }
+
     // Check if item already exists in cart
     const existingItemIndex = cartItems.findIndex(
         cartItem => cartItem.id === item.id
@@ -46,6 +58,9 @@ export const CartProvider = ({ children }) => {
         quantity: item.quantity || 1
       }]);
     }
+
+    toast.success(`${item.name} added to cart`);
+    return true;
   };
 
   const removeFromCart = (itemId) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
@@ -13,11 +13,24 @@ import RestaurantList from './pages/Restaurant/RestaurantList';
 import OrderList from './pages/Orders/OrderList';
 import Profile from './pages/Profile/Profile';
 import Cart from './pages/Cart/Cart';
-import logo from './assets/biteme_logo.gif';
 
 function App() {
     const [showLogin, setShowLogin] = useState(false);
     const { isAuthenticated } = useAuth();
+
+    // Handle global login modal trigger
+    useEffect(() => {
+        const openLoginModal = () => {
+            setShowLogin(true);
+        };
+
+        window.addEventListener('open-login-modal', openLoginModal);
+
+        // Cleanup event listener
+        return () => {
+            window.removeEventListener('open-login-modal', openLoginModal);
+        };
+    }, []);
 
     return (
         <div className="app">

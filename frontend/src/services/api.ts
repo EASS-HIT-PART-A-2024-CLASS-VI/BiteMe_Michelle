@@ -4,8 +4,37 @@ import { v4 as uuidv4 } from 'uuid';
 // Base URL for your backend
 const BASE_URL = 'http://localhost:8000';
 
+// Define interfaces for type safety
+interface AuthHeaders {
+  Authorization?: string;
+}
+
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+interface RegisterData {
+  email: string;
+  password: string;
+  name?: string;
+  phone?: string;
+}
+
+interface UpdateProfileData {
+  name?: string;
+  phone?: string;
+  password?: string;
+}
+
+interface OrderData {
+  items: any[];
+  total_price: number;
+  special_instructions?: string;
+}
+
 // Helper function to get auth headers
-const getAuthHeaders = () => {
+const getAuthHeaders = (): AuthHeaders => {
   const token = localStorage.getItem('token');
   return token
       ? { Authorization: `Bearer ${token}` }
@@ -14,7 +43,7 @@ const getAuthHeaders = () => {
 
 // Authentication services
 export const authService = {
-  async login(email, password) {
+  async login(email: string, password: string) {
     const formData = new FormData();
     formData.append('username', email);
     formData.append('password', password);
@@ -27,7 +56,7 @@ export const authService = {
     return response.data;
   },
 
-  async register(userData) {
+  async register(userData: RegisterData) {
     const response = await axios.post(`${BASE_URL}/users/register`, {
       email: userData.email,
       password: userData.password,
@@ -47,9 +76,28 @@ export const userService = {
     return response.data;
   },
 
-  async updateProfile(userData) {
-    const response = await axios.put(`${BASE_URL}/users/me`, userData, {
-      headers: getAuthHeaders()
+  async updateProfile(userData: UpdateProfileData) {
+    const updateData: any = {};
+
+    if (userData.name) {
+      updateData.full_name = userData.name;
+    }
+
+    if (userData.phone) {
+      updateData.phone_number = userData.phone;
+    }
+
+    if (userData.password) {
+      updateData.password = userData.password;
+    }
+
+    console.log('Sending update data:', updateData);
+
+    const response = await axios.put(`${BASE_URL}/users/me`, updateData, {
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
@@ -61,11 +109,6 @@ export const restaurantService = {
     const response = await axios.get(`${BASE_URL}/restaurants/`, {
       params: filters
     });
-    return response.data;
-  },
-
-  async getRestaurantById(restaurantId) {
-    const response = await axios.get(`${BASE_URL}/restaurants/${restaurantId}`);
     return response.data;
   }
 };
@@ -79,20 +122,14 @@ export const orderService = {
       });
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch orders from backend', error);
-
-      // If backend fails, return empty array instead of local storage
+      console.error('Failed to fetch orders', error);
       return [];
     }
   },
 
-  async createOrder(orderData) {
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Prepare comprehensive order data
+  async createOrder(orderData: OrderData) {
     const completeOrderData = {
-      id: uuidv4(), // Generate unique order ID using UUID
+      id: uuidv4(),
       items: orderData.items,
       total_price: orderData.total_price,
       status: 'PENDING',
@@ -104,7 +141,6 @@ export const orderService = {
     };
 
     try {
-      // Attempt to create order via backend
       const response = await axios.post(`${BASE_URL}/orders/`, completeOrderData, {
         headers: {
           ...getAuthHeaders(),
@@ -112,36 +148,21 @@ export const orderService = {
         }
       });
 
-      // Return the created order
       return response.data;
     } catch (error) {
-      console.error('Backend order creation failed', error);
-
-      // Rethrow the error to be handled by the caller
+      console.error('Order creation failed', error);
       throw error;
-    }
-  },
-
-  async getOrderById(orderId) {
-    try {
-      const response = await axios.get(`${BASE_URL}/orders/${orderId}`, {
-        headers: getAuthHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      console.error(`Failed to fetch order ${orderId}`, error);
-      return null;
     }
   }
 };
 
-// Cart-related services (optional, for persistent cart)
+// Cart-related services
 export const cartService = {
-  saveCart(cartItems) {
+  saveCart(cartItems: any[]) {
     localStorage.setItem('cart', JSON.stringify(cartItems));
   },
 
-  getCart() {
+  getCart(): any[] {
     const savedCart = localStorage.getItem('cart');
     return savedCart ? JSON.parse(savedCart) : [];
   },
@@ -151,7 +172,6 @@ export const cartService = {
   }
 };
 
-// Export a unified API object
 export default {
   auth: authService,
   user: userService,

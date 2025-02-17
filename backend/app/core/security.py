@@ -26,7 +26,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm="HS256")
-
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -42,9 +41,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     except JWTError:
         raise credentials_exception
 
+    # Find user by email
     db = get_database()
     user = db["users"].find_one({"email": token_data.email})
     if user is None:
         raise credentials_exception
-        
+
+    # Convert ObjectId to string
+    user['id'] = str(user['_id'])
+
     return User(**user)
