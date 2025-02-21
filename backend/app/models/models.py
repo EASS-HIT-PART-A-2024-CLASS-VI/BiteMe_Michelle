@@ -105,15 +105,13 @@ class UserUpdate(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-class User(BaseModel):
+class User(UserBase):
     id: Optional[str] = None
-    email: EmailStr
-    full_name: str
     is_active: bool = True
     is_admin: bool = False  # New field for admin status
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-
+    
 class UserInDB(User):
     hashed_password: str
 

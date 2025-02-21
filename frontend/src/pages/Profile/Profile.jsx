@@ -28,6 +28,8 @@ function Profile() {
             setLoading(true);
             const data = await userService.getProfile();
             console.log('Fetched profile:', data);
+            console.log('Phone number type:', typeof data.phone_number);
+            console.log('Phone number value:', data.phone_number);
 
             setProfile(data);
             setFormData({
@@ -173,7 +175,7 @@ function Profile() {
                 <div className="profile-details">
                     <p><strong>Name:</strong> {profile.full_name}</p>
                     <p><strong>Email:</strong> {profile.email}</p>
-                    <p><strong>Phone:</strong> {profile.phone_number || 'Not provided'}</p>
+                    <p><strong>Phone:</strong> {profile.phone_number?.trim() || 'Not provided'}</p>
                     <div className="profile-actions">
                         <button
                             onClick={() => setEditMode(true)}
