@@ -3,6 +3,7 @@ from typing import List, Optional
 from datetime import datetime
 from enum import Enum
 import re
+from fastapi import File, UploadFile, Form
 
 class FoodCategory(str, Enum):
     ITALIAN = "Italian"
@@ -33,17 +34,22 @@ class MenuItem(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class Restaurant(BaseModel):
-    id: str
+    id: Optional[str] = None
     name: str
     cuisine_type: FoodCategory
     rating: float = Field(ge=0, le=5)
     address: str
-    menu: List[MenuItem]
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    description: Optional[str] = None
+    menu: List[MenuItem] = []
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        extra='ignore'  # Ignore extra fields
+    )
 
+# 🚨 **FIX: Move OrderItem outside Restaurant class**
 class OrderItem(BaseModel):
     menu_item_id: str
     restaurant_id: str
@@ -86,8 +92,10 @@ class UserBase(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
+    email: EmailStr
     password: str
+    full_name: str
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
@@ -97,9 +105,12 @@ class UserUpdate(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-class User(UserBase):
+class User(BaseModel):
     id: Optional[str] = None
+    email: EmailStr
+    full_name: str
     is_active: bool = True
+    is_admin: bool = False  # New field for admin status
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { Mail, Lock, User, Phone, X } from 'lucide-react';
 import './LoginPopup.css';
 
 function LoginPopup({ setShowLogin }) {
@@ -32,53 +33,65 @@ function LoginPopup({ setShowLogin }) {
     };
 
     return (
-        <div className="login-popup">
+        <div className="login-popup" onClick={(e) => {
+            if (e.target === e.currentTarget) setShowLogin(false);
+        }}>
             <div className="login-popup-content">
-                <h2>{isLogin ? 'Login' : 'Register'}</h2>
+                <h2>{isLogin ? 'Welcome Back!' : 'Create Account'}</h2>
                 <form onSubmit={handleSubmit}>
                     {!isLogin && (
                         <>
-                            <input
-                                type="text"
-                                placeholder="Name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                            />
-                            <input
-                                type="tel"
-                                placeholder="Phone (Optional)"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
-                            />
+                            <div className="input-group">
+                                <input
+                                    type="text"
+                                    placeholder="Full Name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="input-group">
+                                <input
+                                    type="tel"
+                                    placeholder="Phone Number (Optional)"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                />
+                            </div>
                         </>
                     )}
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                    <button type="submit">
-                        {isLogin ? 'Login' : 'Register'}
+                    <div className="input-group">
+                        <input
+                            type="email"
+                            placeholder="Email Address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="input-group">
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <button type="submit" className="submit-btn">
+                        {isLogin ? 'Sign In' : 'Create Account'}
                     </button>
                 </form>
+
                 <p
                     onClick={() => setIsLogin(!isLogin)}
                     className="toggle-login"
                 >
                     {isLogin
-                        ? 'Need an account? Register'
-                        : 'Already have an account? Login'}
+                        ? "Don't have an account? Sign Up"
+                        : 'Already have an account? Sign In'}
                 </p>
+
                 <button
                     className="close-btn"
                     onClick={() => setShowLogin(false)}

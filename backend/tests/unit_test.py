@@ -11,7 +11,7 @@ def test_password_hashing():
     """Test password hashing functionality"""
     password = "testpassword123"
     hashed = get_password_hash(password)
-    
+
     assert hashed != password
     assert verify_password(password, hashed) == True
     assert verify_password("wrongpassword", hashed) == False
@@ -20,7 +20,7 @@ def test_token_creation():
     """Test access token creation"""
     data = {"sub": "test@example.com"}
     token = create_access_token(data)
-    
+
     assert isinstance(token, str)
     assert len(token) > 0
 
@@ -44,19 +44,19 @@ def test_order_validation():
     }
     order = Order(**valid_order)
     assert order.total_price == 20.0
-    
+
     # Test invalid order (negative price)
     invalid_order = valid_order.copy()
     invalid_order["total_price"] = -10.0
     with pytest.raises(ValueError):
         Order(**invalid_order)
-        
+
     # Test invalid quantity
     invalid_order = valid_order.copy()
     invalid_order["items"][0]["quantity"] = 0
     with pytest.raises(ValueError):
         Order(**invalid_order)
-        
+
     # Test missing required field
     invalid_order = valid_order.copy()
     del invalid_order["restaurant_id"]

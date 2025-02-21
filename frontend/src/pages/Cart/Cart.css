@@ -203,4 +203,22 @@
 
 .btn {
   padding: 10px 20px;
-  border:
+  border: none;  /* Add this line to close the incomplete border property */
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}

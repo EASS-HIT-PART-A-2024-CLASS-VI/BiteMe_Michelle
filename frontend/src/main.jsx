@@ -10,6 +10,7 @@ import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+    // Remove React.StrictMode if you're experiencing double renders
     <React.StrictMode>
         <BrowserRouter>
             <AuthProvider>
@@ -25,6 +26,7 @@ root.render(
                         pauseOnFocusLoss
                         draggable
                         pauseOnHover
+                        limit={1} // Limit number of toasts
                     />
                 </CartProvider>
             </AuthProvider>

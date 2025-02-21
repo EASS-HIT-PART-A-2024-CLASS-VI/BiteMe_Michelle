@@ -1,34 +1,45 @@
 # app/main.py
-from fastapi import FastAPI, HTTPException, Depends, status
+import logging
+from fastapi import FastAPI, HTTPException
+from app.core.config import settings
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordRequestForm
-from typing import List, Optional
-from datetime import timedelta
-from bson import ObjectId
+from fastapi import File, UploadFile, Form
+from fastapi.staticfiles import StaticFiles
+from fastapi.staticfiles import StaticFiles
+import os
+
+
+# Configure logging
+logging.basicConfig(
+    level=logging.ERROR,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+# Disable verbose logging for specific libraries
+logging.getLogger("uvicorn").setLevel(logging.ERROR)
+logging.getLogger("uvicorn.access").setLevel(logging.ERROR)
+logging.getLogger("pymongo").setLevel(logging.ERROR)
+logging.getLogger("motor").setLevel(logging.ERROR)
 
 from app.core.config import settings
-from app.core.security import create_access_token, get_current_user, get_password_hash
-from app.models.models import (
-    Restaurant,  # Ensure this is imported
-    MenuItem, 
-    FoodCategory,
-    User, 
-    UserCreate, 
-    Token, 
-    Order, 
-    OrderStatus
-)
 from app.dbConnection.mongoRepository import get_database
 
 # Import routers
-from app.api import orders, restaurants, users
+from app.api import orders, restaurants, users, admin
 
-app = FastAPI(title="BiteMe Food Delivery API")
+app = FastAPI(
+    title="BiteMe Food Delivery API",
+    description="A comprehensive food delivery API",
+    version="1.0.0"
+)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # CORS Middleware
+
+# Update the CORS middleware in main.py
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"], # Add your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,23 +48,27 @@ app.add_middleware(
 # Get database instance
 db = get_database()
 
+# Ensure static directory exists
+os.makedirs("static/restaurant_images", exist_ok=True)
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 # Include routers
 app.include_router(orders.router, prefix="/orders", tags=["orders"])
-app.include_router(restaurants.router, prefix="/restaurants", tags=["restaurants"])
 app.include_router(users.router, prefix="/users", tags=["users"])
+app.include_router(admin.router, prefix="/admin", tags=["admin"])
+app.include_router(restaurants.router, prefix="/restaurants", tags=["restaurants"])  # Fixed missing parenthesis
 
 # Root endpoint
 @app.get("/")
 async def root():
     return {"message": "Welcome to BiteMe!"}
 
-# Authentication endpoints and other existing endpoints remain the same as in your previous implementation
-
 # Health check endpoint
 @app.get("/health")
 async def health_check():
     try:
-        db.command('ping')
+        db.command("ping")
         return {
             "status": "healthy",
             "database": "connected"
@@ -64,6 +79,22 @@ async def health_check():
             detail=f"Service unhealthy: {str(e)}"
         )
 
+# Startup event
+@app.on_event("startup")
+async def startup_event():
+    logging.info("Application is starting up...")
+
+# Shutdown event
+@app.on_event("shutdown")
+async def shutdown_event():
+    logging.info("Application is shutting down...")
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        log_level="error"  # Ensures only errors are logged
+    )

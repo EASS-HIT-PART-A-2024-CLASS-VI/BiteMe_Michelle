@@ -2,11 +2,12 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth } from './AuthContext';
 
+
 const CartContext = createContext(null);
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   // Load cart from localStorage when authenticated
   useEffect(() => {
@@ -24,61 +25,64 @@ export const CartProvider = ({ children }) => {
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && cartItems.length > 0) {
       localStorage.setItem('cart', JSON.stringify(cartItems));
     }
   }, [cartItems, isAuthenticated]);
 
+
   const addToCart = (item) => {
-    // Check if user is authenticated
     if (!isAuthenticated) {
       toast.error('Please login to add items to cart', {
-        onClick: () => {
-          // You might want to create a global method to open login modal
-          window.dispatchEvent(new Event('open-login-modal'));
-        }
+        toastId: 'login-required', // Unique ID to prevent duplicates
+        onClick: () => window.dispatchEvent(new Event('open-login-modal'))
       });
       return false;
     }
 
-    // Check if item already exists in cart
-    const existingItemIndex = cartItems.findIndex(
-        cartItem => cartItem.id === item.id
-    );
+    // Use a unique identifier for preventing duplicate additions
+    const existingItemIndex = cartItems.findIndex(cartItem => cartItem.id === item.id);
 
     if (existingItemIndex > -1) {
-      // If item exists, increase quantity
-      const updatedCart = [...cartItems];
-      updatedCart[existingItemIndex].quantity += item.quantity || 1;
-      setCartItems(updatedCart);
-    } else {
-      // If item doesn't exist, add new item
-      setCartItems([...cartItems, {
-        ...item,
-        quantity: item.quantity || 1
-      }]);
+      // Item already exists, update quantity
+      const updatedCartItems = [...cartItems];
+      updatedCartItems[existingItemIndex].quantity += item.quantity || 1;
+
+      setCartItems(updatedCartItems);
+
+      // Only show toast if it's a new addition
+      if (item.quantity === 1) {
+        toast.success(`${item.name} added to cart`, {
+          toastId: `cart-${item.id}`, // Unique ID
+        });
+      }
+
+      return true;
     }
 
-    toast.success(`${item.name} added to cart`);
+    // New item
+    setCartItems(prevCart => [...prevCart, { ...item, quantity: item.quantity || 1 }]);
+
+    toast.success(`${item.name} added to cart`, {
+      toastId: `cart-${item.id}`, // Unique ID
+    });
+
     return true;
   };
 
+
   const removeFromCart = (itemId) => {
-    setCartItems(cartItems.filter(item => item.id !== itemId));
+    setCartItems((prevCart) => prevCart.filter(item => item.id !== itemId));
   };
 
   const updateQuantity = (itemId, newQuantity) => {
-    if (newQuantity <= 0) {
-      // Remove item if quantity is 0 or less
-      removeFromCart(itemId);
-    } else {
-      const updatedCart = cartItems.map(item =>
-          item.id === itemId
-              ? { ...item, quantity: newQuantity }
-              : item
-      );
-      setCartItems(updatedCart);
-    }
+    setCartItems((prevCart) =>
+        newQuantity <= 0
+            ? prevCart.filter(item => item.id !== itemId)
+            : prevCart.map(item =>
+                item.id === itemId ? { ...item, quantity: newQuantity } : item
+            )
+    );
   };
 
   const clearCart = () => {
@@ -106,6 +110,7 @@ export const CartProvider = ({ children }) => {
       </CartContext.Provider>
   );
 };
+
 
 // Custom hook to use the CartContext
 export const useCart = () => {

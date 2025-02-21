@@ -1,13 +1,26 @@
-.app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+/* index.css or App.css */
+:root {
+    --primary-color: #8B4513;
+    --secondary-color: #6B3E23;
+    --text-color: #333;
+    --background-color: #f4f4f4;
 }
 
-.main-content {
-  flex: 1;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  padding: 0 1rem;
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.button-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.button-primary:hover {
+    background-color: var(--secondary-color);
 }

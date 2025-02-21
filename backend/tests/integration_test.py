@@ -63,10 +63,10 @@ def test_complete_restaurant_flow(test_client):
     # Create restaurant
     create_response = test_client.post("/restaurants/", json=test_restaurant)
     assert create_response.status_code == 200
-    
+
     # Get the created restaurant's ID
     restaurant_id = create_response.json()["id"]
-    
+
     # Get restaurant details
     get_response = test_client.get(f"/restaurants/?cuisine=Italian")
     assert get_response.status_code == 200
@@ -77,7 +77,7 @@ def test_complete_order_flow(test_client):
     # 1. Register and login
     register_response = test_client.post("/users/register", json=test_user)
     user_id = register_response.json()["id"]
-    
+
     login_response = test_client.post(
         "/users/token",
         data={

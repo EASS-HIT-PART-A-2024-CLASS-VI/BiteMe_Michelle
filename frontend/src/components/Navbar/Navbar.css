@@ -1,39 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap');
+
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  background-color: #f8f9fa;
+  padding: 4px 20px;
+  background-color: #fac94c;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-bottom: 2px solid #333;
 }
 
-.navbar-brand a {
-  font-size: 1.5rem;
-  font-weight: bold;
-  text-decoration: none;
-  color: #333;
+.navbar-logo {
+  height: 80px;  /* Adjusted size */
+  width: auto;
+  margin-right: 10px;
 }
 
 .navbar-menu {
   display: flex;
-  gap: 20px;
+  gap: 15px;
 }
 
 .navbar-menu a {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.5rem; /* Elegant size */
   text-decoration: none;
   color: #333;
-  transition: color 0.3s ease;
+  padding: 8px 15px;
+  border-radius: 20px;
+  background-color: #ffe5b4; /* Soft pastel background */
+  font-weight: 600;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .navbar-menu a:hover {
-  color: #007bff;
+  color: #ff0008;
+  border-color: #ff0008; /* Border appears on hover */
+  background-color: rgba(0, 123, 255, 0.1); /* Light hover effect */
 }
 
 .navbar-auth button {
   padding: 8px 15px;
   border: none;
-  background-color: #007bff;
+  background-color: #ff0008;
   color: white;
-  border-radius: 4px;
+  font-family: "Poppins", sans-serif;
+  border-radius: 20px;
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar-auth button:hover {
+  background-color: #d60006;
 }

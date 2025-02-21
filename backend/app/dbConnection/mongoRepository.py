@@ -2,13 +2,21 @@ from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from dotenv import load_dotenv
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.ERROR,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
 
 # MongoDB connection details
-MONGO_URI = os.getenv("MONGO_URI")  # Fetch URI from .env
-DATABASE_NAME = "BiteMeDB"  # Change this to your actual database name
+MONGO_URI = os.getenv("MONGO_URI", "")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "BiteMeDB")
 
 def get_mongo_client():
     """
@@ -19,14 +27,12 @@ def get_mongo_client():
         ConnectionFailure: If the connection to MongoDB fails.
     """
     try:
-        print(f"Connecting to MongoDB with URI: {MONGO_URI}")  # Debug log
         client = MongoClient(MONGO_URI)
-        client.admin.command('ping')  # Ensure the connection is successful
-        print("Connected to MongoDB")  # Debug log
+        client.admin.command('ping')  # Verify connection
         return client
     except ConnectionFailure as e:
-        print(f"Failed to connect to MongoDB: {e}")
-        raise ConnectionFailure(f"Failed to connect to MongoDB: {e}")
+        logger.error(f"Failed to connect to MongoDB: {e}")
+        raise
 
 def get_database():
     """
@@ -46,11 +52,14 @@ def insert_item(collection_name, item):
     Returns:
         InsertOneResult: The result of the insert operation.
     """
-    db = get_database()
-    collection = db[collection_name]
-    result = collection.insert_one(item)
-    print(f"Inserted item into {collection_name}: {item}")
-    return result
+    try:
+        db = get_database()
+        collection = db[collection_name]
+        result = collection.insert_one(item)
+        return result
+    except Exception as e:
+        logger.error(f"Error inserting item into {collection_name}: {e}")
+        raise
 
 def find_all(collection_name, filter=None):
     """
@@ -61,11 +70,14 @@ def find_all(collection_name, filter=None):
     Returns:
         list: A list of matching documents.
     """
-    db = get_database()
-    collection = db[collection_name]
-    documents = list(collection.find(filter or {}, {"_id": 0}))  # Exclude the `_id` field
-    print(f"Retrieved documents from {collection_name}: {documents}")
-    return documents
+    try:
+        db = get_database()
+        collection = db[collection_name]
+        documents = list(collection.find(filter or {}, {"_id": 0}))
+        return documents
+    except Exception as e:
+        logger.error(f"Error retrieving documents from {collection_name}: {e}")
+        raise
 
 def update_item(collection_name, filter, update):
     """
@@ -77,11 +89,14 @@ def update_item(collection_name, filter, update):
     Returns:
         UpdateResult: The result of the update operation.
     """
-    db = get_database()
-    collection = db[collection_name]
-    result = collection.update_one(filter, {"$set": update})
-    print(f"Updated item in {collection_name} where {filter}: {update}")
-    return result
+    try:
+        db = get_database()
+        collection = db[collection_name]
+        result = collection.update_one(filter, {"$set": update})
+        return result
+    except Exception as e:
+        logger.error(f"Error updating item in {collection_name}: {e}")
+        raise
 
 def delete_item(collection_name, filter):
     """
@@ -92,8 +107,11 @@ def delete_item(collection_name, filter):
     Returns:
         DeleteResult: The result of the delete operation.
     """
-    db = get_database()
-    collection = db[collection_name]
-    result = collection.delete_one(filter)
-    print(f"Deleted item from {collection_name} where {filter}")
-    return result
+    try:
+        db = get_database()
+        collection = db[collection_name]
+        result = collection.delete_one(filter)
+        return result
+    except Exception as e:
+        logger.error(f"Error deleting item from {collection_name}: {e}")
+        raise

@@ -8,6 +8,7 @@ function Profile() {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [editMode, setEditMode] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { logout } = useAuth();
 
     const [formData, setFormData] = useState({
@@ -19,27 +20,30 @@ function Profile() {
     });
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const data = await userService.getProfile();
-                setProfile(data);
-                setFormData({
-                    name: data.full_name || '',
-                    email: data.email || '',
-                    phone: data.phone_number || '',
-                    password: '',
-                    confirmPassword: ''
-                });
-                setLoading(false);
-            } catch (error) {
-                console.error('Failed to fetch profile', error);
-                toast.error('Failed to load profile');
-                setLoading(false);
-            }
-        };
-
         fetchProfile();
     }, []);
+
+    const fetchProfile = async () => {
+        try {
+            setLoading(true);
+            const data = await userService.getProfile();
+            console.log('Fetched profile:', data);
+
+            setProfile(data);
+            setFormData({
+                name: data.full_name || '',
+                email: data.email || '',
+                phone: data.phone_number || '',
+                password: '',
+                confirmPassword: ''
+            });
+        } catch (error) {
+            console.error('Failed to fetch profile:', error);
+            toast.error('Failed to load profile');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -52,40 +56,45 @@ function Profile() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate password match if password is being changed
         if (formData.password && formData.password !== formData.confirmPassword) {
             toast.error('Passwords do not match');
             return;
         }
 
         try {
-            // Prepare update data
+            setIsSubmitting(true);
+            console.log('Submitting profile update...');
+
             const updateData = {
                 name: formData.name,
                 phone: formData.phone
             };
 
-            // Add password if provided
             if (formData.password) {
                 updateData.password = formData.password;
             }
 
-            // Send update request
-            const updatedProfile = await userService.updateProfile(updateData);
+            console.log('Update data:', updateData);
 
-            // Update local state
+            const updatedProfile = await userService.updateProfile(updateData);
+            console.log('Updated profile:', updatedProfile);
+
             setProfile(updatedProfile);
             setEditMode(false);
-
             toast.success('Profile updated successfully');
+
+            // Refresh profile data
+            await fetchProfile();
         } catch (error) {
-            console.error('Failed to update profile', error);
+            console.error('Failed to update profile:', error);
             toast.error(error.response?.data?.detail || 'Failed to update profile');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     if (loading) {
-        return <div>Loading profile...</div>;
+        return <div className="loading">Loading profile...</div>;
     }
 
     return (
@@ -143,11 +152,18 @@ function Profile() {
                         </div>
                     )}
                     <div className="profile-actions">
-                        <button type="submit" className="btn btn-primary">Save Changes</button>
+                        <button
+                            type="submit"
+                            className="btn btn-primary"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? 'Saving...' : 'Save Changes'}
+                        </button>
                         <button
                             type="button"
                             onClick={() => setEditMode(false)}
                             className="btn btn-secondary"
+                            disabled={isSubmitting}
                         >
                             Cancel
                         </button>

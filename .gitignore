@@ -1,4 +1,5 @@
 .DS_Store
 
-biteme.egg-info/
+biteme.egg-info
+
 .env

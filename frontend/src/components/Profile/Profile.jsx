@@ -3,169 +3,169 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { userService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { User, Mail, Phone, Lock, LogOut, Edit } from 'lucide-react';
 import './Profile.css';
 
 function Profile() {
     const navigate = useNavigate();
     const { logout } = useAuth();
-
-    // State for loading and edit mode
     const [loading, setLoading] = useState(true);
     const [editMode, setEditMode] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // State for user profile
     const [profile, setProfile] = useState({
         name: '',
         email: '',
         phone: ''
     });
 
-    // State for form data (includes password fields)
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         phone: '',
-        currentPassword: '',
         newPassword: '',
         confirmNewPassword: ''
     });
 
-    // Fetch user profile on component mount
+    const fetchProfile = async () => {
+        try {
+            const userData = await userService.getProfile();
+
+            const newProfile = {
+                name: userData.full_name || '',
+                email: userData.email || '',
+                phone: userData.phone_number
+            };
+
+            setProfile(newProfile);
+
+            const newFormData = {
+                name: userData.full_name || '',
+                email: userData.email || '',
+                phone: userData.phone_number || '',
+                newPassword: '',
+                confirmNewPassword: ''
+            };
+
+            setFormData(newFormData);
+            setLoading(false);
+        } catch (error) {
+            console.error('Failed to load profile:', error);
+            toast.error('Failed to load profile');
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchUserProfile = async () => {
-            try {
-                const userData = await userService.getProfile();
-                setProfile({
-                    name: userData.full_name || '',
-                    email: userData.email || '',
-                    phone: userData.phone_number || ''
-                });
-
-                // Populate form with existing data
-                setFormData({
-                    name: userData.full_name || '',
-                    email: userData.email || '',
-                    phone: userData.phone_number || '',
-                    currentPassword: '',
-                    newPassword: '',
-                    confirmNewPassword: ''
-                });
-
-                setLoading(false);
-            } catch (error) {
-                toast.error('Failed to load profile');
-                setLoading(false);
-            }
-        };
-
-        fetchUserProfile();
+        fetchProfile();
     }, []);
 
-    // Handle input changes
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prevData => ({
-            ...prevData,
+        setFormData(prev => ({
+            ...prev,
             [name]: value
         }));
     };
 
-    // Handle profile update submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate new password if entered
         if (formData.newPassword) {
             if (formData.newPassword !== formData.confirmNewPassword) {
-                toast.error('New passwords do not match');
+                toast.error('Passwords do not match');
                 return;
             }
         }
 
         try {
-            // Prepare update data
+            setIsSubmitting(true);
+
             const updateData = {
                 name: formData.name,
-                phone: formData.phone
+                phone: formData.phone,
+                ...(formData.newPassword && { password: formData.newPassword })
             };
 
-            // Add password if new password is provided
-            if (formData.newPassword) {
-                updateData.password = formData.newPassword;
-            }
-
-            // Update profile
             const updatedProfile = await userService.updateProfile(updateData);
 
-            // Update local state
             setProfile({
                 name: updatedProfile.full_name,
                 email: updatedProfile.email,
                 phone: updatedProfile.phone_number
             });
 
-            // Exit edit mode
             setEditMode(false);
-
-            // Show success message
             toast.success('Profile updated successfully');
+            await fetchProfile();
         } catch (error) {
-            // Handle update errors
-            const errorMessage = error.response?.data?.detail || 'Update failed';
-            toast.error(errorMessage);
-            console.error('Profile update error:', error);
+            console.error('Failed to update profile:', error);
+            toast.error(error.response?.data?.detail || 'Failed to update profile');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    // Handle logout
-    const handleLogout = () => {
-        logout();
-        navigate('/');
-    };
-
-    // Render loading state
     if (loading) {
-        return <div className="profile-loading">Loading profile...</div>;
+        return (
+            <div className="modern-profile-container">
+                <div className="modern-profile-loading">Loading your profile...</div>
+            </div>
+        );
     }
 
-    // Render edit mode
     if (editMode) {
         return (
-            <div className="profile-container">
+            <div className="modern-profile-container">
                 <h1>Edit Profile</h1>
-                <form onSubmit={handleSubmit} className="profile-edit-form">
-                    <div className="form-group">
-                        <label>Full Name</label>
+                <form onSubmit={handleSubmit} className="modern-profile-form">
+                    <div className="modern-form-group">
+                        <label>
+                            <User size={16} className="icon" />
+                            Full Name
+                        </label>
                         <input
                             type="text"
                             name="name"
                             value={formData.name}
                             onChange={handleInputChange}
+                            placeholder="Enter your full name"
                             required
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label>Email (cannot be changed)</label>
+                    <div className="modern-form-group">
+                        <label>
+                            <Mail size={16} className="icon" />
+                            Email
+                        </label>
                         <input
                             type="email"
                             value={formData.email}
                             disabled
+                            className="modern-input-disabled"
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label>Phone Number</label>
+                    <div className="modern-form-group">
+                        <label>
+                            <Phone size={16} className="icon" />
+                            Phone Number
+                        </label>
                         <input
                             type="tel"
                             name="phone"
                             value={formData.phone}
                             onChange={handleInputChange}
+                            placeholder="Enter your phone number"
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label>New Password (optional)</label>
+                    <div className="modern-form-group">
+                        <label>
+                            <Lock size={16} className="icon" />
+                            New Password (optional)
+                        </label>
                         <input
                             type="password"
                             name="newPassword"
@@ -176,29 +176,35 @@ function Profile() {
                     </div>
 
                     {formData.newPassword && (
-                        <div className="form-group">
-                            <label>Confirm New Password</label>
+                        <div className="modern-form-group">
+                            <label>
+                                <Lock size={16} className="icon" />
+                                Confirm New Password
+                            </label>
                             <input
                                 type="password"
                                 name="confirmNewPassword"
                                 value={formData.confirmNewPassword}
                                 onChange={handleInputChange}
+                                placeholder="Confirm your new password"
                                 required
                             />
                         </div>
                     )}
 
-                    <div className="profile-actions">
+                    <div className="modern-profile-actions">
                         <button
                             type="submit"
-                            className="btn btn-primary"
+                            className="modern-btn modern-btn-primary"
+                            disabled={isSubmitting}
                         >
-                            Save Changes
+                            {isSubmitting ? 'Saving Changes...' : 'Save Changes'}
                         </button>
                         <button
                             type="button"
-                            className="btn btn-secondary"
+                            className="modern-btn modern-btn-secondary"
                             onClick={() => setEditMode(false)}
+                            disabled={isSubmitting}
                         >
                             Cancel
                         </button>
@@ -208,37 +214,45 @@ function Profile() {
         );
     }
 
-    // Render view mode
     return (
-        <div className="profile-container">
+        <div className="modern-profile-container">
             <h1>My Profile</h1>
-            <div className="profile-details">
-                <div className="profile-item">
-                    <strong>Name:</strong>
+            <div className="modern-profile-details">
+                <div className="modern-profile-item">
+                    <strong>
+                        <User className="icon" size={18} />
+                        Name
+                    </strong>
                     <span>{profile.name}</span>
                 </div>
-                <div className="profile-item">
-                    <strong>Email:</strong>
+                <div className="modern-profile-item">
+                    <strong>
+                        <Mail className="icon" size={18} />
+                        Email
+                    </strong>
                     <span>{profile.email}</span>
                 </div>
-                <div className="profile-item">
-                    <strong>Phone:</strong>
+                <div className="modern-profile-item">
+                    <strong>
+                        <Phone className="icon" size={18} />
+                        Phone
+                    </strong>
                     <span>{profile.phone || 'Not provided'}</span>
                 </div>
             </div>
 
-            <div className="profile-actions">
+            <div className="modern-profile-actions">
                 <button
                     onClick={() => setEditMode(true)}
-                    className="btn btn-primary"
+                    className="modern-btn modern-btn-primary"
                 >
-                    Edit Profile
+                    <Edit size={18} /> Edit Profile
                 </button>
                 <button
-                    onClick={handleLogout}
-                    className="btn btn-secondary"
+                    onClick={logout}
+                    className="modern-btn modern-btn-secondary"
                 >
-                    Logout
+                    <LogOut size={18} /> Logout
                 </button>
             </div>
         </div>
