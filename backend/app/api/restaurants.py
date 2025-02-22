@@ -182,14 +182,20 @@ async def add_restaurant(
         # Handle image upload
         file_extension = os.path.splitext(image.filename)[1]
         image_filename = f"{restaurant_id}{file_extension}"
-        file_path = os.path.join(UPLOAD_DIR, image_filename)
+        base_dir = os.path.join(os.getcwd(), "static", "restaurant_images")
+        os.makedirs(base_dir, exist_ok=True)
+        file_path = os.path.join(base_dir, image_filename)
 
-        print(f"Saving image to: {file_path}")
+        print(f"Saving to FULL path: {file_path}")
+        print(f"Base directory: {base_dir}")
+        print(f"Directory exists: {os.path.exists(base_dir)}")
 
         # Save the uploaded image
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(image.file, buffer)
 
+        # Verify file exists
+        print(f"File exists after saving: {os.path.exists(file_path)}")
         # Create restaurant data
         restaurant_data = {
             "id": restaurant_id,
@@ -199,6 +205,7 @@ async def add_restaurant(
             "address": address,
             "description": description or "",
             "menu": [],
+            "image_url": f"/static/restaurant_images/{image_filename}",
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow()
         }

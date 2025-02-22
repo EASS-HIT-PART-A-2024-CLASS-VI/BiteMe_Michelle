@@ -4,6 +4,9 @@ import { restaurantService } from '../../services/api';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import './RestaurantList.css';
+import MenuRecommendations from './MenuRecommendations';
+
+
 
 import burgerHeavenLogo from "../../assets/burgerheaven.png";
 import pizzaParadiseLogo from "../../assets/pizzaparadise.png";
@@ -31,11 +34,17 @@ function RestaurantModal({ restaurant, onClose, onAddToCart, isAuthenticated }) 
         });
     };
 
-    // Prioritize backend image, fallback to hardcoded logo, then placeholder
     const restaurantImage =
-        (restaurant.image_url ? `${BASE_URL}${restaurant.image_url}` : null) ||
-        restaurantLogos[restaurant.name] ||
-        '/api/placeholder/250/250';
+        (restaurant.image_url
+            ? `${BASE_URL}${restaurant.image_url}`
+            : restaurantLogos[restaurant.name] || '/api/placeholder/250/250');
+
+    console.log('Restaurant Image URL:', restaurantImage);
+    console.log('Restaurant Image URL Details:', {
+        baseUrl: BASE_URL,
+        imageUrl: restaurant.image_url,
+        fullImageUrl: `${BASE_URL}${restaurant.image_url}`
+    });
 
     return (
         <div className="restaurant-modal-overlay">
@@ -44,6 +53,10 @@ function RestaurantModal({ restaurant, onClose, onAddToCart, isAuthenticated }) 
                     <h2>{restaurant.name}</h2>
                     <button onClick={onClose} className="close-modal-btn">×</button>
                 </div>
+                <MenuRecommendations
+                    restaurant={restaurant}
+                    onAddToCart={onAddToCart}
+                />
                 <div className="modal-content">
                     <div className="restaurant-modal-image">
                         <img

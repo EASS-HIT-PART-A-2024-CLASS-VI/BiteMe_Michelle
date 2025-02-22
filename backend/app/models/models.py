@@ -111,7 +111,7 @@ class User(UserBase):
     is_admin: bool = False  # New field for admin status
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-    
+
 class UserInDB(User):
     hashed_password: str
 

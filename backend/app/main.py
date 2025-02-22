@@ -2,10 +2,9 @@
 import logging
 from fastapi import FastAPI, HTTPException
 from app.core.config import settings
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi import File, UploadFile, Form
 from fastapi.staticfiles import StaticFiles
-from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 import os
 
 
@@ -27,19 +26,21 @@ from app.dbConnection.mongoRepository import get_database
 # Import routers
 from app.api import orders, restaurants, users, admin
 
+os.makedirs("static", exist_ok=True)
+os.makedirs("static/restaurant_images", exist_ok=True)
+
 app = FastAPI(
     title="BiteMe Food Delivery API",
     description="A comprehensive food delivery API",
     version="1.0.0"
 )
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# CORS Middleware
 
-# Update the CORS middleware in main.py
+
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"], # Add your frontend URL
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,17 +49,25 @@ app.add_middleware(
 # Get database instance
 db = get_database()
 
-# Ensure static directory exists
-os.makedirs("static/restaurant_images", exist_ok=True)
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+static_dir = os.path.abspath("static")
+app.mount("/static", StaticFiles(directory="static", html=True), name="static")
+
+
 # Include routers
 app.include_router(orders.router, prefix="/orders", tags=["orders"])
 app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
 app.include_router(restaurants.router, prefix="/restaurants", tags=["restaurants"])  # Fixed missing parenthesis
 
+@app.get("/static/{path:path}")
+async def read_static(path: str):
+    print(f"Requested static path: {path}")
+    print(f"Current working directory: {os.getcwd()}")
+    print(f"Static directory exists: {os.path.exists('static')}")
+    print(f"Full static path: {os.path.abspath('static')}")
+    print(f"Requested file exists: {os.path.exists(os.path.join('static', path))}")
 # Root endpoint
 @app.get("/")
 async def root():
