@@ -1,38 +1,31 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { orderService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { Sparkles, Wand2 } from 'lucide-react';
 
 const MenuRecommendations = ({ restaurant, onAddToCart }) => {
-    // State management
     const [recommendations, setRecommendations] = useState(null);
     const [loading, setLoading] = useState(false);
     const [userPreference, setUserPreference] = useState('');
 
-    // Authentication context
     const { user } = useAuth();
 
-    // Fetch recommendations function
     const fetchRecommendations = useCallback(async (preferenceTriggered = false) => {
-        // Only fetch if preference is provided
         if (!preferenceTriggered || !userPreference.trim()) return;
 
         try {
             setLoading(true);
 
-            // Get user's order history
             let orderHistory = [];
             try {
                 const orders = await orderService.getOrders();
-                orderHistory = orders.flatMap(order =>
+                orderHistory = [...new Set(orders.flatMap(order =>
                     order.items.map(item => item.name)
-                );
-                orderHistory = [...new Set(orderHistory)];
+                ))];
             } catch (error) {
                 console.log('No previous orders found');
             }
 
-            // Get recommendations from the service
             const response = await fetch('http://localhost:8001/recommend/', {
                 method: 'POST',
                 headers: {
@@ -56,15 +49,9 @@ const MenuRecommendations = ({ restaurant, onAddToCart }) => {
 
             const data = await response.json();
 
-            // Clean up the reasoning text
-            const cleanedReasoning = data.reasoning
-                .replace(/\*\*.*?\*\*/g, '')  // Remove bold markers
-                .trim();
-
-            // Update recommendations
             setRecommendations({
                 ...data,
-                reasoning: cleanedReasoning
+                reasoning: data.reasoning.replace(/\*\*.*?\*\*/g, '').trim()
             });
         } catch (error) {
             console.error('Error fetching recommendations:', error);
@@ -74,12 +61,10 @@ const MenuRecommendations = ({ restaurant, onAddToCart }) => {
         }
     }, [restaurant, userPreference]);
 
-    // Handler for manual recommendation request
     const handleRecommendationRequest = () => {
         fetchRecommendations(true);
     };
 
-    // Handler for adding recommended item to cart
     const handleAddToCart = (menuItem) => {
         const cartItem = {
             id: `${restaurant.id}-${menuItem.id || menuItem.name}`,
@@ -100,7 +85,6 @@ const MenuRecommendations = ({ restaurant, onAddToCart }) => {
                 </h3>
             </div>
 
-            {/* User Preference Input */}
             <div className="mb-6 flex shadow-sm">
                 <div className="relative flex-grow">
                     <input
@@ -131,12 +115,8 @@ const MenuRecommendations = ({ restaurant, onAddToCart }) => {
                 </button>
             </div>
 
-            {/* Recommendations Area */}
             {recommendations && (
-                <div
-                    className="space-y-4 animate-fade-in"
-                    key={userPreference} // This ensures re-render on preference change
-                >
+                <div className="space-y-4 animate-fade-in" key={userPreference}>
                     {recommendations.recommended_items.map((itemName, index) => {
                         const menuItem = restaurant.menu.find(
                             item => item.name.toLowerCase() === itemName.toLowerCase()
@@ -145,17 +125,7 @@ const MenuRecommendations = ({ restaurant, onAddToCart }) => {
                         if (!menuItem) return null;
 
                         return (
-                            <div
-                                key={index}
-                                className="
-                                    flex justify-between items-center
-                                    p-4 bg-gray-50 rounded-lg
-                                    hover:shadow-md
-                                    transition-all duration-300
-                                    border border-transparent
-                                    hover:border-yellow-300
-                                "
-                            >
+                            <div key={index} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:shadow-md transition-all duration-300 border border-transparent hover:border-yellow-300">
                                 <div>
                                     <h4 className="font-semibold text-lg text-gray-800">{menuItem.name}</h4>
                                     <p className="text-sm text-gray-600 mb-1">${menuItem.price.toFixed(2)}</p>
@@ -165,13 +135,7 @@ const MenuRecommendations = ({ restaurant, onAddToCart }) => {
                                 </div>
                                 <button
                                     onClick={() => handleAddToCart(menuItem)}
-                                    className="
-                                        bg-yellow-400 text-gray-800
-                                        px-4 py-2 rounded-md
-                                        hover:bg-yellow-500
-                                        transition-colors
-                                        flex items-center
-                                    "
+                                    className="bg-yellow-400 text-gray-800 px-4 py-2 rounded-md hover:bg-yellow-500 transition-colors flex items-center"
                                 >
                                     Add to Cart
                                 </button>
@@ -179,21 +143,12 @@ const MenuRecommendations = ({ restaurant, onAddToCart }) => {
                         );
                     })}
 
-                    {/* Reasoning Section */}
-                    <div
-                        className="
-                            mt-4 text-sm text-gray-600
-                            bg-white border border-gray-200
-                            p-4 rounded-lg
-                            shadow-sm
-                        "
-                    >
+                    <div className="mt-4 text-sm text-gray-600 bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
                         <p className="italic">{recommendations.reasoning}</p>
                     </div>
                 </div>
             )}
 
-            {/* Empty State */}
             {!recommendations && !loading && (
                 <div className="text-center py-8 text-gray-400">
                     <Sparkles className="mx-auto mb-4 text-yellow-500" size={48} />
