@@ -139,7 +139,7 @@ python generate_secret_key.py
 ```
 4.Copy the generated secret key from the terminal output and use it as needed.
 
-**Make sure the `.env` file is excluded from version control by adding it to `.gitignore`. The API key is essential for activating the financial suggestion feature powered by Google Gemini AI.**
+**Make sure the `.env` file is excluded from version control by adding it to `.gitignore`. The API key is essential for activating the menu item recommendation feature powered by Google Gemini AI.**
 
 **4. Install Dependencies:**
    ```
