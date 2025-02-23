@@ -11,7 +11,7 @@ BiteMe is a microservices-based food ordering platform that provides personalize
 
 👉 Watch on YouTube :
 
-[![BiteMeDemoVideo]![סרטון.png](../%D7%A1%D7%A8%D7%98%D7%95%D7%9F.png)](https://youtu.be/MCjcXWOxsag)
+[![BiteMeDemoVideo](video.png)](https://youtu.be/MCjcXWOxsag)
 
 
 ---
