@@ -1,6 +1,8 @@
 # 🍔BiteMe: Food Ordering System
-##Overview
-RealBiteMe is a food recommendation and menu management application designed to enhance dining experiences. It provides users with intelligent menu recommendations, a user-friendly interface, and a robust backend for data management.
+## Overview
+
+BiteMe is a microservices-based food ordering platform that provides personalized menu recommendations using Gemini AI. It features a FastAPI backend, React frontend, and MongoDB database, supporting guest users, logged-in users, and admins. The system is containerized with Docker, ensuring scalability and seamless interactions between services. 🚀
+
 ![_png biteme logo (1)](https://github.com/user-attachments/assets/f7eed7ed-b51a-4a71-8b0e-5cec53db5d64)
 
 ---
@@ -26,16 +28,27 @@ RealBiteMe is a food recommendation and menu management application designed to 
   - Password hashing
   - Token-based authentication
   - Role-based access control
+    
+- 🧠 AI-Powered Recommendations
+  - Personalized food suggestions using Gemini AI
+  - Recommendations based on order history and preferences
+  - Recommendations based on time of the day
+
+---
+## Architecture Diagram:
+![Architecture Diagram](https://github.com/user-attachments/assets/67ad1f0f-819a-4b61-b08d-9af41ec1990e)
+
 ---
 
 ## 🛠️ Technologies Used
 
-### Backend Stack:
 - **Backend**: FastAPI, Pydantic, PyMongo
 - **Database**: MongoDB
 - **Frontend**: React, JavaScript, HTML, CSS
 - **Authentication**: JWT (JSON Web Tokens)
 - **Testing**: pytest
+- **Docke**: Containerization for microservices
+- **Gemini AI**: AI-powered menu recommendations
 
 ---
 
@@ -132,7 +145,8 @@ docker build -t biteme-backend .
 docker run -d -p 8000:8000 biteme-backend
    ```
 ---
-📚 API Documentation
+## 📚 API Documentation
+
 Access Swagger UI for interactive API documentation:
 
 URL: http://localhost:8000/docs
@@ -144,4 +158,8 @@ Explore and test all endpoints directly in your browser
 ## 🙌 Contributing
 
 Contributions are welcome! Feel free to open issues or submit pull requests.
+
+Michelle Cain
+
+email:michellecainn@gmail.com
 
