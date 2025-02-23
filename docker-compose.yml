@@ -1,0 +1,32 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    environment:
+      - VITE_API_URL=http://backend:8000
+      - VITE_RECOMMENDATIONS_URL=http://menu-recommendations-service:8001
+    depends_on:
+      - backend
+      - menu-recommendations-service
+
+  backend:
+    build: ./backend
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - SECRET_KEY=${SECRET_KEY}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+
+  menu-recommendations-service:
+    build: ./menu-recommendations-service
+    ports:
+      - "${RECOMMENDED_PORT:-8001}:8001"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+
+networks:
+  default:
+    name: realbite_network

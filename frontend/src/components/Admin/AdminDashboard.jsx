@@ -108,6 +108,9 @@ const AdminDashboard = () => {
             formData.append('rating', restaurantForm.rating.toString());
             formData.append('address', restaurantForm.address);
             formData.append('description', restaurantForm.description || '');
+            if (restaurantForm.image) {
+                formData.append('image', restaurantForm.image);
+            }
 
             const response = await restaurantService.updateRestaurant(
                 selectedRestaurant.id,
@@ -137,7 +140,8 @@ const AdminDashboard = () => {
             rating: restaurant.rating || 0,
             address: restaurant.address || '',
             description: restaurant.description || '',
-            image: null
+            image: null,
+            image_url: restaurant.image_url || ''
         });
         setIsEditModalOpen(true);
     };
@@ -582,6 +586,23 @@ const AdminDashboard = () => {
                                     })}
                                 />
                             </div>
+                            <div className="form-group">
+                                <label>Restaurant Image</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => setRestaurantForm({
+                                        ...restaurantForm,
+                                        image: e.target.files[0]
+                                    })}
+                                />
+                                {restaurantForm.image && (
+                                    <div className="image-preview">
+                                        <p>Selected: {restaurantForm.image.name}</p>
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="form-actions">
                                 <button type="submit" className="admin-button admin-button-primary">
                                     Update Restaurant
@@ -659,6 +680,24 @@ const AdminDashboard = () => {
                                     <option value="Main Course">Main Course</option>
                                     <option value="Dessert">Dessert</option>
                                     <option value="Beverage">Beverage</option>
+                                </select>
+                            </div>
+                            {/* Add this inside the form in the Add Menu Item Modal */}
+                            <div className="form-group">
+                                <label>Spiciness Level</label>
+                                <select
+                                    value={menuItemForm.spiciness_level}
+                                    onChange={(e) => setMenuItemForm({
+                                        ...menuItemForm,
+                                        spiciness_level: parseInt(e.target.value)
+                                    })}
+                                    required
+                                >
+                                    <option value="1">1 (Mild)</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3 (Medium)</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5 (Very Spicy)</option>
                                 </select>
                             </div>
                             <div className="form-group">

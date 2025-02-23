@@ -80,7 +80,20 @@ function RestaurantModal({ restaurant, onClose, onAddToCart, isAuthenticated }) 
                                     <div className="menu-item-details">
                                         <span className="item-name">{item.name}</span>
                                         <span className="item-description">{item.description}</span>
-                                        <span className="item-price">${Number(item.price).toFixed(2)}</span>
+                                        <div className="item-info">
+                                            <span className="item-price">${Number(item.price).toFixed(2)}</span>
+                                            {item.spiciness_level && (
+                                                <span className={`spiciness-level spiciness-${item.spiciness_level}`}>
+                                                     Spiciness: {item.spiciness_level}
+                                                </span>
+                                            )}
+                                            {item.is_vegetarian && (
+                                                <span className="menu-item-tag">Vegetarian</span>
+                                            )}
+                                            {!item.available && (
+                                                <span className="menu-item-tag unavailable">Not Available</span>
+                                            )}
+                                        </div>
                                     </div>
                                     <button
                                         className="add-to-cart-btn"
