@@ -24,14 +24,13 @@ BiteMe is a microservices-based food ordering platform that provides personalize
   - User profile management
 
 - 🍽️ Restaurant Management
-  - Create and manage restaurant profiles
-  - Add, update, and delete menu items
-  - Filter restaurants by cuisine and rating
+  - Create, delete, update and manage restaurant profiles
+  - Add and delete menu items
+  - Filter restaurants by cuisine or name
 
 - 🛒 Order Processing
   - Create and track food orders
   - Retrieve user-specific order history
-  - Update order status
 
 - 🔒 Security Features
   - Password hashing
@@ -79,13 +78,13 @@ Each microservice is containerized and connected via **Docker Compose**.
 
 ```plaintext
 RealBiteMe/
-│── backend/                   # FastAPI backend services
-│── frontend/                  # React-based frontend 
-│── menu-recommendations-service/  # AI-driven recommendation engine
-│── .gitignore                 # Git ignore file
-│── .env                       # Environment variables
-│── docker-compose.yml # Multi-container setup
-│── README.md                  # Project documentation
+│── backend/                            # FastAPI backend services
+│── frontend/                           # React-based frontend 
+│── menu-recommendations-service/       # AI-driven recommendation engine
+│── .gitignore                          # Git ignore file
+│── .env                                # Environment variables
+│── docker-compose.yml                  # Multi-container setup
+│── README.md                           # Project documentation
 
 ```
 
@@ -122,6 +121,25 @@ SECRET_KEY=your_secret_key
 GEMINI_API_KEY=your_gemini_api_key
  ```
 
+Visit Google AI Studio to obtain your API key. (https://aistudio.google.com/apikey)
+
+Visit MongoDB atlas to create your mongo URI. (https://www.mongodb.com/)
+
+On the backend/generate_secret_key.py you can generate a secret key by:
+
+*Ensure you have Python installed on your system (version 3.x).*
+
+1.Open a terminal or command prompt.
+
+2.Navigate to the folder where the script is located using cd (if necessary).
+
+3.Run the script by executing:
+```
+python generate_secret_key.py
+```
+4.Copy the generated secret key from the terminal output and use it as needed.
+
+**Make sure the `.env` file is excluded from version control by adding it to `.gitignore`. The API key is essential for activating the financial suggestion feature powered by Google Gemini AI.**
 
 **4. Install Dependencies:**
    ```
@@ -132,7 +150,6 @@ pip install -r requirements.txt
 **5. Run the Application using Docker Compose:**
 ```
 docker-compose up --build
-
 ```
 This will start: 
 
