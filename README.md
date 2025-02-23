@@ -40,6 +40,20 @@ BiteMe is a microservices-based food ordering platform that provides personalize
 
 ---
 
+## 🏗️ Microservices Architecture
+
+BiteMe follows a **microservices architecture**, separating different functionalities into individual services:
+
+| Microservice                 | Description |
+|------------------------------|-------------|
+| **Frontend**                 | React-based UI |
+| **Backend (API Server)**     | FastAPI service handling authentication, restaurants, and orders |
+| **Menu Recommendations Service** | AI-driven recommendation engine using Pydantic AI & Gemini API |
+
+Each microservice is containerized and connected via **Docker Compose**.
+
+---
+
 ## 🛠️ Technologies Used
 
 - **Backend**: FastAPI, Pydantic, PyMongo
@@ -57,10 +71,11 @@ BiteMe is a microservices-based food ordering platform that provides personalize
 ```plaintext
 RealBiteMe/
 │── backend/                   # FastAPI backend services
-│── frontend/                  # Frontend application
+│── frontend/                  # React-based frontend 
 │── menu-recommendations-service/  # AI-driven recommendation engine
 │── .gitignore                 # Git ignore file
 │── .env                       # Environment variables
+│── docker-compose.yml # Multi-container setup
 │── README.md                  # Project documentation
 
 ```
@@ -69,12 +84,11 @@ RealBiteMe/
 ## 📋 System Requirements
 
 ### Prerequisites:
-- Python 3.9+
-- MongoDB
-- pip and virtualenv (for Python dependency management)
-- Docker: Required for microservices integration
--Node.js 16+ (for frontend)
-
+- **Python 3.9+** (for FastAPI backend)
+- **MongoDB** (as the database)
+- **Node.js 16+** (for the frontend)
+- **Docker & Docker Compose** (for containerization)
+- **Pip & Virtualenv** (for Python dependency management)
   
 ---
 
@@ -87,39 +101,37 @@ git clone <repository-url>
 cd RealBiteMe
 ```
 
- **2. Create Virtual Environment:**
+**2. Create Virtual Environment:**
 ```
 python3 -m venv venv
 source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
  ```
+**3.Create a .env file in the project root with:**
+ ```
+MONGO_URI=your_mongodb_connection_string
+SECRET_KEY=your_secret_key
+GEMINI_API_KEY=your_gemini_api_key
+ ```
 
 
- **3. Install Dependencies:**
+**4. Install Dependencies:**
    ```
 pip install -r requirements.txt
  ```
 
 
-**4. Configure Environment Variables**
-Create a .env file in the project root with:
+**5. Run the Application using Docker Compose:**
 ```
-MONGO_URI=your_mongodb_connection_string
-SECRET_KEY=your_secret_key
-```
-
----
-
-## ▶️ **🚀 Running the Application**
-
-Development Mode
+docker-compose up --build
 
 ```
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-Production Deployment
-```
-uvicorn app.main:app --host 0.0.0.0 --port 8000
-```
+This will start: 
+
+✅ Frontend (React)
+
+✅ Backend (FastAPI)
+
+✅ Menu Recommendations Service (AI-powered recommendations)
 
 ---
 
@@ -128,22 +140,12 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 pytest
 ```
-Test Coverage
+Test Coverage:
 
-Unit Tests: Model validations, security functions
-Integration Tests: User registration, restaurant management, order processing
----
+- Unit Tests: Model validations, security functions
+- Integration Tests: User authentication, restaurant management, order processing---
 
-## **🐋 Docker Support**
 
-1. **Build the Docker Image:**
- ```
-docker build -t biteme-backend .
-   ```
-2. **Run the Docker Container:**
-```
-docker run -d -p 8000:8000 biteme-backend
-   ```
 ---
 ## 📚 API Documentation
 
@@ -151,7 +153,10 @@ Access Swagger UI for interactive API documentation:
 
 URL: http://localhost:8000/docs
 Explore and test all endpoints directly in your browser
+---
+## 🎥 Demo Video:
 
+👉 Watch on YouTube : https://youtu.be/MCjcXWOxsag
 
 ---
 
