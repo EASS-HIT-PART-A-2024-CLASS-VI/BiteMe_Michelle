@@ -5,6 +5,12 @@ BiteMe is a microservices-based food ordering platform that provides personalize
 
 ![_png biteme logo (1)](https://github.com/user-attachments/assets/f7eed7ed-b51a-4a71-8b0e-5cec53db5d64)
 
+
+---
+## 🎥 Demo Video:
+
+👉 Watch on YouTube : https://youtu.be/MCjcXWOxsag
+
 ---
 
 ## 🌟 Key Features
@@ -152,11 +158,9 @@ Test Coverage:
 Access Swagger UI for interactive API documentation:
 
 URL: http://localhost:8000/docs
-Explore and test all endpoints directly in your browser
----
-## 🎥 Demo Video:
 
-👉 Watch on YouTube : https://youtu.be/MCjcXWOxsag
+Explore and test all endpoints directly in your browser
+
 
 ---
 
