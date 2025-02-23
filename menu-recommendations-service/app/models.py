@@ -9,7 +9,8 @@ class MenuItem(BaseModel):
 
 class RecommendationRequest(BaseModel):
     restaurant_menu: List[MenuItem]
-    user_previous_orders: Optional[List[str]] = []  # List of previously ordered item names
+    user_previous_orders: Optional[List[str]] = []
+    user_preference: Optional[str] = None  # New field for user's specific request
 
 class Recommendation(BaseModel):
     recommended_items: List[str]

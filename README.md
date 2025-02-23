@@ -1,12 +1,12 @@
 # 🍔BiteMe: Food Ordering System
-This repository contains the code for a Food Ordering System that allows users to order food online, manage menu items, and handle food orders efficiently. The backend is built using FastAPI and follows SOLID principles for clean and modular design.
+##Overview
+RealBiteMe is a food recommendation and menu management application designed to enhance dining experiences. It provides users with intelligent menu recommendations, a user-friendly interface, and a robust backend for data management.
 ![_png biteme logo (1)](https://github.com/user-attachments/assets/f7eed7ed-b51a-4a71-8b0e-5cec53db5d64)
 
 ---
 
 ## 🌟 Key Features
 
-### Backend Capabilities:
 - 🔐 User Authentication
   - Secure user registration
   - JWT-based login system
@@ -31,11 +31,10 @@ This repository contains the code for a Food Ordering System that allows users t
 ## 🛠️ Technologies Used
 
 ### Backend Stack:
-- **Web Framework**: FastAPI
+- **Backend**: FastAPI, Pydantic, PyMongo
 - **Database**: MongoDB
-- **ORM/Validation**: Pydantic
+- **Frontend**: React, JavaScript, HTML, CSS
 - **Authentication**: JWT (JSON Web Tokens)
-- **Database Driver**: PyMongo
 - **Testing**: pytest
 
 ---
@@ -43,32 +42,13 @@ This repository contains the code for a Food Ordering System that allows users t
 ## 📂 Project Structure
 
 ```plaintext
-..
-backend/
-├── app/
-│   ├── api/                 # API routes
-│   │   ├── __init__.py
-│   │   ├── orders.py
-│   │   ├── restaurants.py
-│   │   └── users.py
-│   ├── core/               # Core configurations
-│   │   ├── __init__.py
-│   │   ├── config.py
-│   │   └── security.py
-│   ├── dbConnection/       # Database connectivity
-│   │   └── mongoRepository.py
-│   ├── models/            # Data models
-│   │   ├── __init__.py
-│   │   └── models.py
-│   └── main.py
-├── tests/                 # Test files
-│   ├── __init__.py
-│   ├── conftest.py
-│   ├── integration_test.py
-│   └── unit_test.py
-├── Dockerfile            # Docker configuration
-├── README.md
-└── requirements.txt      # Project dependencies
+RealBiteMe/
+│── backend/                   # FastAPI backend services
+│── frontend/                  # Frontend application
+│── menu-recommendations-service/  # AI-driven recommendation engine
+│── .gitignore                 # Git ignore file
+│── .env                       # Environment variables
+│── README.md                  # Project documentation
 
 ```
 
@@ -78,7 +58,11 @@ backend/
 ### Prerequisites:
 - Python 3.9+
 - MongoDB
-- pip package manager
+- pip and virtualenv (for Python dependency management)
+- Docker: Required for microservices integration
+-Node.js 16+ (for frontend)
+
+  
 ---
 
 ## **👄 Installation**
@@ -86,8 +70,8 @@ backend/
 
 ### 1. Clone the Repository
 ```
-git clone https://github.com/EASS-HIT-PART-A-2024-CLASS-VI/BiteMe.git
-cd BiteMe/backend
+git clone <repository-url>
+cd RealBiteMe
 ```
 
  **2. Create Virtual Environment:**
@@ -154,12 +138,6 @@ Access Swagger UI for interactive API documentation:
 URL: http://localhost:8000/docs
 Explore and test all endpoints directly in your browser
 
-🔍 Key Endpoints
-
-/users/register: User registration
-/users/token: User authentication
-/restaurants/: Restaurant management
-/orders/: Order processing
 
 ---
 
