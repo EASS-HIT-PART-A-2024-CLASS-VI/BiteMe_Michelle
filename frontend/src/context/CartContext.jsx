@@ -40,6 +40,8 @@ export const CartProvider = ({ children }) => {
       return false;
     }
 
+    
+
     // Use a unique identifier for preventing duplicate additions
     const existingItemIndex = cartItems.findIndex(cartItem => cartItem.id === item.id);
 

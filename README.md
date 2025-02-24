@@ -100,7 +100,6 @@ RealBiteMe/
   
 ---
 
-## **👄 Installation**
 ## 🔧 Installation
 
 ### 1. Clone the Repository
@@ -169,7 +168,7 @@ pytest
 Test Coverage:
 
 - Unit Tests: Model validations, security functions
-- Integration Tests: User authentication, restaurant management, order processing---
+- Integration Tests: User authentication, restaurant management, order processing
 
 
 ---

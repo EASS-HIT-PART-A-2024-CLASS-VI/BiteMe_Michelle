@@ -12,7 +12,8 @@ import burgerHeavenLogo from "../../assets/burgerheaven.png";
 import pizzaParadiseLogo from "../../assets/pizzaparadise.png";
 import sushiMasterLogo from "../../assets/sushimaster.png";
 import taqueriaLogo from "../../assets/taqueria.png";
-
+import tandoorLogo from "../../assets/tandoor.jpg";
+import goldenLogo from "../../assets/golden.jpeg";
 // Base URL for static images
 const BASE_URL = 'http://localhost:8000';
 
@@ -21,7 +22,10 @@ const restaurantLogos = {
     'Burger Heaven': burgerHeavenLogo,
     'Pizza Paradise': pizzaParadiseLogo,
     'Sushi Master': sushiMasterLogo,
-    'Taqueria Deliciosa': taqueriaLogo
+    'Taqueria Deliciosa': taqueriaLogo,
+    'Tandoor': tandoorLogo,
+    'Golden Dragon': goldenLogo
+
 };
 
 function RestaurantModal({ restaurant, onClose, onAddToCart, isAuthenticated }) {
