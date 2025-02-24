@@ -116,7 +116,9 @@ source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
 **3.Create a .env file in the project root with:**
  ```
 MONGO_URI=your_mongodb_connection_string
+DATABASE_NAME=your_database_name
 SECRET_KEY=your_secret_key
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 GEMINI_API_KEY=your_gemini_api_key
  ```
 
