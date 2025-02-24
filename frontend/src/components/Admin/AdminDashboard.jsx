@@ -713,19 +713,7 @@ const AdminDashboard = () => {
                                     Vegetarian
                                 </label>
                             </div>
-                            <div className="form-group">
-                                <label className="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        checked={menuItemForm.available}
-                                        onChange={(e) => setMenuItemForm({
-                                            ...menuItemForm,
-                                            available: e.target.checked
-                                        })}
-                                    />
-                                    Available
-                                </label>
-                            </div>
+
                             <div className="form-actions">
                                 <button type="submit" className="admin-button admin-button-primary">
                                     Add Item
