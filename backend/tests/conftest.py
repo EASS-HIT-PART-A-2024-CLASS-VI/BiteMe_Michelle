@@ -48,16 +48,6 @@ def test_user():
         "phone_number": "1234567890"
     }
 
-@pytest.fixture
-def test_admin():
-    """Create test admin data"""
-    return {
-        "email": "admin@biteme.com",
-        "password": "admin123",
-        "full_name": "Admin User",
-        "phone_number": "9999999999",
-        "is_admin": True
-    }
 
 @pytest.fixture
 def test_restaurant():
@@ -135,22 +125,67 @@ def auth_headers(test_client, test_user):
     return {"Authorization": f"Bearer {token}"}
 
 @pytest.fixture
-def admin_headers(test_client, test_admin):
+def admin_headers(test_client, test_db, test_admin):
     """Create authentication headers for admin user"""
-    # Register admin first
-    test_client.post("/users/register", json=test_admin)
-    
-    # Get token
-    response = test_client.post(
-        "/users/token",
-        data={
-            "username": test_admin["email"],
-            "password": test_admin["password"]
-        }
+    # Check if user already exists, if so, try to get token directly
+    existing_user = test_db["users"].find_one({"email": test_admin["email"]})
+
+    if existing_user:
+        # If user exists, attempt to get token
+        login_response = test_client.post(
+            "/users/token",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"]
+            }
+        )
+    else:
+        # Register user first
+        register_response = test_client.post("/users/register", json={
+            "email": test_admin["email"],
+            "password": test_admin["password"],
+            "full_name": test_admin["full_name"],
+            "phone_number": test_admin["phone_number"]
+        })
+
+        # Verify registration was successful
+        assert register_response.status_code == 200, f"Registration failed: {register_response.text}"
+
+        # Attempt to login
+        login_response = test_client.post(
+            "/users/token",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"]
+            }
+        )
+
+    # Verify login was successful
+    assert login_response.status_code == 200, f"Login failed: {login_response.text}"
+
+    # Manually update user to admin in the database
+    update_result = test_db["users"].update_one(
+        {"email": test_admin["email"]},
+        {"$set": {"is_admin": True}}
     )
-    token = response.json()["access_token"]
+
+    # Verify the update was successful
+    assert update_result.modified_count >= 0, "Failed to set admin status"
+
+    # Get token from login response
+    token = login_response.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
 
+# Keep the test_admin fixture as is
+@pytest.fixture
+def test_admin():
+    """Create test admin data"""
+    return {
+        "email": "admin@biteme.com",
+        "password": "admin",
+        "full_name": "Admin User",
+        "phone_number": "9999999999"
+    }
 @pytest.fixture
 def authenticated_client(test_client, auth_headers):
     """Create an authenticated test client"""
